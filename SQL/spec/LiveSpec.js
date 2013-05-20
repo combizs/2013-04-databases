@@ -43,22 +43,15 @@ describe("Persistent Node Chat Server", function() {
                   expect(results.length).toEqual(1);
                   expect(results[0].username).toEqual("Valjean");
                   expect(results[0].message).toEqual("In mercy's name, three days is all I need.");
-                  /* Todo: You will need to change these tests if the
-                   * column names in your schema are different from
-                   * mine! */
-
                   done();
                 });
             });
   });
 
-  it("Should output all messages from the DB", function(done) {
+  xit("Should output all messages from the DB", function(done) {
     // Let's insert a message into the db
-    var queryString = "";
-    var queryArgs = ["Javert", "Men like you can never change!"];
-    /* Todo: - The exact query string and query args to use
-     * here depend on the schema you design, so I'll leave
-     * them up to you. */
+    var queryString = "INSERT INTO messages SET ?";
+    var queryArgs = [{username: "Javert", message: "Men like you can never change!"}];
 
     dbConnection.query( queryString, queryArgs,
       function(err, results, fields) {
