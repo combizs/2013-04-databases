@@ -49,9 +49,11 @@ exports.handleRequest = function(request, response) {
 
       request.on('end', function() {
         try {
-          var message = JSON.parse(postData.join(''));
           rooms[pathname] = rooms[pathname] || [];
-          rooms[pathname].push(message);
+          var message = JSON.parse(postData.join(''));
+          // rooms[pathname].push(message);
+          //todo: make it save to mysql
+
           response.writeHead(201, headers);
           answerMessage = JSON.stringify('');
         } catch (error) {

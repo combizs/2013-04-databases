@@ -19,7 +19,7 @@ describe("Persistent Node Chat Server", function() {
 
     /* Empty the db table before each test so that multiple tests
      * (or repeated runs of the tests) won't screw each other up: */
-    dbConnection.query("DELETE FROM " + tablename);
+    // dbConnection.query("DELETE FROM " + tablename);
   });
 
   afterEach(function() {
@@ -35,11 +35,12 @@ describe("Persistent Node Chat Server", function() {
             },
             function(error, response, body) {
 
-              var queryString = "INSERT INTO messages SET ?";
-              var queryArgs = [form];
+              var queryString = "SELECT username, message FROM messages WHERE username = ?";
+              var queryArgs = ["Valjean"];
 
               dbConnection.query( queryString, queryArgs,
                 function(err, results, fields) {
+                  if(err) throw err;
                   expect(results.length).toEqual(1);
                   expect(results[0].username).toEqual("Valjean");
                   expect(results[0].message).toEqual("In mercy's name, three days is all I need.");
