@@ -23,8 +23,9 @@ var dbConnection = mysql.createConnection({
   database: "chat"
 });
 
+dbConnection.connect();
 exports.handleRequest = function(request, response) {
-  console.log("Serving request type " + request.method + " for url " + request.url);
+  // console.log("Serving request type " + request.method + " for url " + request.url);
   request.setEncoding('utf8');
 
   var parsedurl = url.parse(request.url);
@@ -53,29 +54,29 @@ exports.handleRequest = function(request, response) {
       request.on('data', function(chunk) {
         postData += chunk;
       });
-
       request.on('end', function() {
+      // console.log(postData);
 
-        dbConnection.connect();
-        var message = JSON.parse('{"' + decodeURI(postData).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}');
+        // dbConnection.connect();
+        var message = querystring.parse(postData);
         try {
           rooms[pathname] = rooms[pathname] || [];
-          var queryString = "INSERT INTO messages (username, message, roomid, date) values ('Valjean', 'In mercys name, three days is all I need.', '0', '1369098653')";
+          // var queryString = "INSERT INTO messages (username, message) values ('" + message.username + "', '" + message.message + "');";
+          var queryString = "INSERT INTO messages SET ?";
           var queryArgs = [message];
 
-          console.log('message', message);
-
-          dbConnection.query(queryString);
-          
-          response.writeHead(201, headers);
-        } catch (error) {
+          statusCode = 200;
+          response.writeHead(statusCode, headers);
+          dbConnection.query(queryString, queryArgs);
+        }
+        catch (error) {
           console.error(error);
           response.writeHead(400, headers);
         }
-        finally {
-          dbConnection.end();
-          response.end(JSON.stringify(message));
-        }
+        // finally {
+          // dbConnection.end();
+        // }
+        response.end();
       });
       break;
   }

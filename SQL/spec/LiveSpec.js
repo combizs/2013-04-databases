@@ -7,7 +7,7 @@ var request = require("request"); // You might need to npm install the request m
 describe("Persistent Node Chat Server", function() {
   var dbConnection;
 
-  beforeEach(function() {
+  beforeEach(function(done) {
     dbConnection = mysql.createConnection({
       user: "root",
       password: "",
@@ -19,7 +19,7 @@ describe("Persistent Node Chat Server", function() {
 
     /* Empty the db table before each test so that multiple tests
      * (or repeated runs of the tests) won't screw each other up: */
-    dbConnection.query("DELETE FROM " + tablename);
+    dbConnection.query("DELETE FROM " + tablename, done);
   });
 
   afterEach(function() {
@@ -28,25 +28,28 @@ describe("Persistent Node Chat Server", function() {
 
   it("Should insert posted messages to the DB", function(done) {
     // Post a message to the node chat server:
-    request({method: "POST",
-             uri: "http://127.0.0.1:8080/classes/room1",
-             form: {username: "Valjean",
-                    message: "In mercys name, three days is all I need."}
-            },
-            function(error, response, body) {
+    request({
+      method: "POST",
+      uri: "http://127.0.0.1:8080/classes/room1",
+      form: {username: "Valjean",
+              message: "In mercys name, three days is all I need."}
+      },
+    function(error, response, body) {
+      // console.log(response);
+      // var queryString = "SELECT username, message FROM messages WHERE username = ?";
+      var queryString = "SELECT * FROM messages WHERE username = 'Valjean'";
+      var queryArgs = [];
 
-              var queryString = "SELECT username, message FROM messages WHERE username = ?";
-              var queryArgs = ["Valjean"];
-
-              dbConnection.query( queryString, queryArgs,
-                function(err, results, fields) {
-                  if(err) throw err;
-                  expect(results.length).toEqual(1);
-                  expect(results[0].username).toEqual("Valjean");
-                  expect(results[0].message).toEqual("In mercys name, three days is all I need.");
-                  done();
-                });
-            });
+      dbConnection.query( queryString, queryArgs,
+      function(err, results, fields) {
+        console.log(results);
+        // if(err) throw err;
+        expect(results.length).toEqual(1);
+        expect(results[0].username).toEqual("Valjean");
+        expect(results[0].message).toEqual("In mercys name, three days is all I need.");
+        done();
+      });
+    });
   });
 
   xit("Should output all messages from the DB", function(done) {
