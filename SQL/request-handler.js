@@ -25,7 +25,7 @@ var dbConnection = mysql.createConnection({
 
 dbConnection.connect();
 exports.handleRequest = function(request, response) {
-  // console.log("Serving request type " + request.method + " for url " + request.url);
+  console.log("Serving request type " + request.method + " for url " + request.url);
   request.setEncoding('utf8');
 
   var parsedurl = url.parse(request.url);
@@ -54,14 +54,11 @@ exports.handleRequest = function(request, response) {
       request.on('data', function(chunk) {
         postData += chunk;
       });
-      request.on('end', function() {
-      // console.log(postData);
 
-        // dbConnection.connect();
+      request.on('end', function() {
         var message = querystring.parse(postData);
         try {
           rooms[pathname] = rooms[pathname] || [];
-          // var queryString = "INSERT INTO messages (username, message) values ('" + message.username + "', '" + message.message + "');";
           var queryString = "INSERT INTO messages SET ?";
           var queryArgs = [message];
 
@@ -73,10 +70,9 @@ exports.handleRequest = function(request, response) {
           console.error(error);
           response.writeHead(400, headers);
         }
-        // finally {
-          // dbConnection.end();
-        // }
-        response.end();
+        finally {
+          response.end();
+        }
       });
       break;
   }
