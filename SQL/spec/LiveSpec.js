@@ -19,7 +19,7 @@ describe("Persistent Node Chat Server", function() {
 
     /* Empty the db table before each test so that multiple tests
      * (or repeated runs of the tests) won't screw each other up: */
-    // dbConnection.query("DELETE FROM " + tablename);
+    dbConnection.query("DELETE FROM " + tablename);
   });
 
   afterEach(function() {

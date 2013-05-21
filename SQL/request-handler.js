@@ -40,28 +40,28 @@ exports.handleRequest = function(request, response) {
       response.end('');
       break;
     case 'POST':
-      var postData = [];
+      var postData = '';
       var answerMessage;
 
       request.on('data', function(chunk) {
-        postData.push(chunk);
+        postData += chunk;
       });
 
       request.on('end', function() {
+        var message = JSON.parse('{"' + decodeURI(postData).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}');
         try {
           rooms[pathname] = rooms[pathname] || [];
-          var message = JSON.parse(postData.join(''));
           // rooms[pathname].push(message);
           //todo: make it save to mysql
+          console.log('message', message);
 
           response.writeHead(201, headers);
-          answerMessage = JSON.stringify('');
         } catch (error) {
+          console.error(error);
           response.writeHead(400, headers);
-          answerMessage = JSON.stringify('POST Error. Bad JSON?');
         }
         finally {
-          response.end(answerMessage);
+          response.end(message);
         }
       });
       break;

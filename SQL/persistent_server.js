@@ -8,12 +8,17 @@ var dbConnection = mysql.createConnection({
 });
 
 dbConnection.connect();
-/* Now you can make queries to the Mysql database using the
- * dbConnection.query() method.
- * See https://github.com/felixge/node-mysql for more details about
- * using this module.*/
+//Todo; FIX THIS
+var message;
+var queryString = "INSERT INTO messages (username, message) values ('Valjean', 'In mercys name, three days is all I need.')";
+var queryArgs = [message];
 
-/* You already know how to create an http server from the previous
- * assignment; you can re-use most of that code here. */
+dbConnection.query(queryString, queryArgs,
+function(err, results, fields) {
+  if(err) throw err;
+  console.log('err:', err);
+  console.log('results:', results);
+  console.log('fields:', fields);
+});
 
 dbConnection.end();
