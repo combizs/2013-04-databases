@@ -1,5 +1,6 @@
 var url = require('url');
 var querystring = require('querystring');
+var mysql = require('mysql');
 
 var rooms = {
   '/classes/room': [],
@@ -15,6 +16,12 @@ var headers = {
   "access-control-max-age": 10, // Seconds
   "Content-Type": "application/json"
 };
+
+var dbConnection = mysql.createConnection({
+  user: "root",
+  password: "",
+  database: "chat"
+});
 
 exports.handleRequest = function(request, response) {
   console.log("Serving request type " + request.method + " for url " + request.url);
@@ -35,7 +42,7 @@ exports.handleRequest = function(request, response) {
       response.end(JSON.stringify({results:data}));
       break;
     case 'OPTIONS':
-      headers['Allow'] = 'GET, OPTIONS, POST';
+      headers.Allow = 'GET, OPTIONS, POST';
       response.writeHead(200, headers);
       response.end('');
       break;
@@ -48,20 +55,26 @@ exports.handleRequest = function(request, response) {
       });
 
       request.on('end', function() {
+
+        dbConnection.connect();
         var message = JSON.parse('{"' + decodeURI(postData).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}');
         try {
           rooms[pathname] = rooms[pathname] || [];
-          // rooms[pathname].push(message);
-          //todo: make it save to mysql
+          var queryString = "INSERT INTO messages (username, message, roomid, date) values ('Valjean', 'In mercys name, three days is all I need.', '0', '1369098653')";
+          var queryArgs = [message];
+
           console.log('message', message);
 
+          dbConnection.query(queryString);
+          
           response.writeHead(201, headers);
         } catch (error) {
           console.error(error);
           response.writeHead(400, headers);
         }
         finally {
-          response.end(message);
+          dbConnection.end();
+          response.end(JSON.stringify(message));
         }
       });
       break;

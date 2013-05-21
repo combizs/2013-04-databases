@@ -31,7 +31,7 @@ describe("Persistent Node Chat Server", function() {
     request({method: "POST",
              uri: "http://127.0.0.1:8080/classes/room1",
              form: {username: "Valjean",
-                    message: "In mercy's name, three days is all I need."}
+                    message: "In mercys name, three days is all I need."}
             },
             function(error, response, body) {
 
@@ -43,7 +43,7 @@ describe("Persistent Node Chat Server", function() {
                   if(err) throw err;
                   expect(results.length).toEqual(1);
                   expect(results[0].username).toEqual("Valjean");
-                  expect(results[0].message).toEqual("In mercy's name, three days is all I need.");
+                  expect(results[0].message).toEqual("In mercys name, three days is all I need.");
                   done();
                 });
             });
