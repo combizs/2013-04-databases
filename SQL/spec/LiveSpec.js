@@ -17,8 +17,6 @@ describe("Persistent Node Chat Server", function() {
 
     var tablename = "messages";
 
-    /* Empty the db table before each test so that multiple tests
-     * (or repeated runs of the tests) won't screw each other up: */
     dbConnection.query("DELETE FROM " + tablename, done);
   });
 
@@ -27,7 +25,6 @@ describe("Persistent Node Chat Server", function() {
   });
 
   it("Should insert posted messages to the DB", function(done) {
-    // Post a message to the node chat server:
     request({
       method: "POST",
       uri: "http://127.0.0.1:8080/classes/room1",
@@ -35,15 +32,11 @@ describe("Persistent Node Chat Server", function() {
               message: "In mercys name, three days is all I need."}
       },
     function(error, response, body) {
-      // console.log(response);
-      // var queryString = "SELECT username, message FROM messages WHERE username = ?";
       var queryString = "SELECT * FROM messages WHERE username = 'Valjean'";
       var queryArgs = [];
 
       dbConnection.query( queryString, queryArgs,
       function(err, results, fields) {
-        console.log(results);
-        // if(err) throw err;
         expect(results.length).toEqual(1);
         expect(results[0].username).toEqual("Valjean");
         expect(results[0].message).toEqual("In mercys name, three days is all I need.");
@@ -52,15 +45,12 @@ describe("Persistent Node Chat Server", function() {
     });
   });
 
-  xit("Should output all messages from the DB", function(done) {
-    // Let's insert a message into the db
+  it("Should output all messages from the DB", function(done) {
     var queryString = "INSERT INTO messages SET ?";
     var queryArgs = [{username: "Javert", message: "Men like you can never change!"}];
 
     dbConnection.query( queryString, queryArgs,
       function(err, results, fields) {
-        /* Now query the Node chat server and see if it returns
-         * the message we just inserted: */
         request("http://127.0.0.1:8080/classes/room1",
           function(error, response, body) {
             var messageLog = JSON.parse(body);

@@ -33,14 +33,20 @@ exports.handleRequest = function(request, response) {
   var query = querystring.parse(parsedurl.search);
 
   var statusCode = 500, data;
+  var getDataResults = '';
 
   switch (request.method) {
     case 'GET':
       statusCode = (rooms[pathname]) ? 200 : 404;
       data = rooms[pathname] || [];
       data = data.slice(~~query['?skip']);
-      response.writeHead(statusCode, headers);
-      response.end(JSON.stringify({results:data}));
+      var queryString = "SELECT * FROM messages";
+      var queryArgs = [];
+      dbConnection.query(queryString, queryArgs, function(err, results, fields) {
+        getDataResults = JSON.stringify(results);
+        response.writeHead(statusCode, headers);
+        response.end(getDataResults);
+      });
       break;
     case 'OPTIONS':
       headers.Allow = 'GET, OPTIONS, POST';
